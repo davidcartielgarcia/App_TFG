@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">TFG</string>
+    <string name="start">Start</string>
+    <string name="SSID">Wi-Fi SSID</string>
+    <string name="password">Password</string>
+    <string name="wifi_connect">Connect</string>
+    <string name="ble_info">Start Device. Connect to BLE</string>
+    <string name="wifi_info">Enter WiFi SSID and Password</string>
+    <string name="found_ble_device">Found BLE device</string>
+    <string name="found_ble_devices">Found BLE devices</string>
+    <string name="ble_device_scan_failed">"Scan Failed with error code "</string>
+    <string name="device_name">"Device Name "</string>
+    <string name="device_mac">"MAC: XX:XX:XX:XX:XX"</string>
+    <string name="sel_ble">"+"</string>
+</resources>

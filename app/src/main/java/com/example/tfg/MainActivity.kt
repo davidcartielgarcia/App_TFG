@@ -21,11 +21,14 @@ import android.view.View
 import android.widget.*
 import com.example.tfg.adapter.ScanResultAdapter
 import kotlinx.android.synthetic.main.activity_main.*
+import java.nio.charset.Charset
 import java.util.*
 import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity() {
+    private var passChar: BluetoothGattCharacteristic? = null
+    private var ssidChar: BluetoothGattCharacteristic? = null
     private var wifiChar: BluetoothGattCharacteristic? = null
     private val REQUEST_ENABLE_BT = 1
     private val scanResults = mutableListOf<ScanResult>()
@@ -35,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private val LOCATION_PERMISSION_REQUEST_CODE = 2
     val service_uuid = UUID.fromString("397049be-8387-11ec-a8a3-0242ac120002")
     val ssid_uuid = UUID.fromString("431b31c2-8387-11ec-a8a3-0242ac120002")
+    val pass_uuid = UUID.fromString("bbbcefba-8389-11ec-a8a3-0242ac120002")
     val wifi_uuid=UUID.fromString("e38895b4-8e4a-11ec-b909-0242ac120002")
 
     //wifi *******************************************************//
@@ -89,20 +93,21 @@ class MainActivity : AppCompatActivity() {
         scan_button.setOnClickListener {
             ble_status()
             if (bluetoothAdapter?.isEnabled == true) {
+                Toast.makeText(this,getString(R.string.ble_search),Toast.LENGTH_LONG).show()
                 scanResults.clear()
                 scanLeDevice(true)
             }
         }
         wifi_button.setOnClickListener {
-            val arrayAdapter:ArrayAdapter<String>
-            lvWifi.visibility=View.VISIBLE
-            arrayAdapter=ArrayAdapter(this,android.R.layout.simple_expandable_list_item_1,wifiResults)
-            lvWifi.adapter=arrayAdapter
+            writeCharacteristic(ssidChar!!,ssid_connect.toByteArray())
+            Handler(Looper.getMainLooper()).postDelayed(
+                { writeCharacteristic(passChar!!,pass_text.text.toString().toByteArray())
+                },
+                100)
         }
         lvWifi.setOnItemClickListener { parent, view, position, id ->
-            val ssidText=findViewById<EditText>(R.id.ssid_text)
             ssid_connect=wifiResults[position]
-            writeCharacteristic(wifiChar!!,ssid_connect.toByteArray())
+            tvSSID.text=ssid_connect
         }
     }
 
@@ -143,26 +148,24 @@ class MainActivity : AppCompatActivity() {
                 super.onScanResult(callbackType, result)
                 val indexQuery = scanResults.indexOfFirst { it.device.address == result.device.address }
                 if (indexQuery == -1) { // A scan result doesn't exist with the same address
-                    textView.text = getString(R.string.found_ble_device)
                     scanResults.add(result)
                 }
             }
 
             override fun onBatchScanResults(results: List<ScanResult>?) {
                 super.onBatchScanResults(results)
-                textView.text = getString(R.string.found_ble_devices)
+                Toast.makeText(this@MainActivity,getString(R.string.found_ble_devices),Toast.LENGTH_SHORT).show()
             }
 
             override fun onScanFailed(errorCode: Int) {
                 super.onScanFailed(errorCode)
-                textView.text = getString(R.string.ble_device_scan_failed)+ errorCode
+                Toast.makeText(this@MainActivity,getString(R.string.ble_device_scan_failed)+errorCode,Toast.LENGTH_SHORT).show()
             }
         }
 
     private fun initwifiLayout() {
         b_start.visibility=View.INVISIBLE
         wifi_settings.visibility=View.VISIBLE
-
     }
 
 
@@ -182,43 +185,47 @@ class MainActivity : AppCompatActivity() {
     object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             super.onConnectionStateChange(gatt, status, newState)
-            if (status==BluetoothGatt.GATT_SUCCESS){
-                if (newState==BluetoothProfile.STATE_CONNECTED){
-
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
                     Handler(Looper.getMainLooper()).post {
                         bluetoothGatt?.discoverServices()
                     }
-                    ConstLayBLE.visibility=View.INVISIBLE
-
-                }
-                else if (newState==BluetoothProfile.STATE_DISCONNECTED){
-                    textView.text="Disconencted"
+                    ConstLayBLE.visibility = View.INVISIBLE
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.disconnected),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     gatt?.close()
                 }
-            }
-            else{
-                textView.text="Error"
+            } else {
+                Toast.makeText(this@MainActivity, getString(R.string.error), Toast.LENGTH_SHORT)
+                    .show()
                 gatt?.close()
             }
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
             super.onServicesDiscovered(gatt, status)
-            val ssidChar= gatt?.getService(service_uuid)?.getCharacteristic(ssid_uuid)
-            wifiChar= gatt?.getService(service_uuid)?.getCharacteristic(wifi_uuid)
+            ssidChar = gatt?.getService(service_uuid)?.getCharacteristic(ssid_uuid)
+            passChar =gatt?.getService(service_uuid)?.getCharacteristic(pass_uuid)
+            wifiChar = gatt?.getService(service_uuid)?.getCharacteristic(wifi_uuid)
             readCharacteristic(wifiChar!!)
             initwifiLayout()
         }
-
+        /*
         override fun onCharacteristicRead(
             gatt: BluetoothGatt?,
             characteristic: BluetoothGattCharacteristic?,
             status: Int
         ) {
             super.onCharacteristicRead(gatt, characteristic, status)
-            ssid_char_list= characteristic?.value!!.toString(Charsets.UTF_8)
-            addWifi(ssid_char_list)
+            //ssid_char_list= characteristic?.value!!.toString(Charsets.UTF_8)
+            //addWifi(ssid_char_list)
         }
+
+         */
     }
 
     private fun addWifi(ssidCharList: String) {
@@ -231,9 +238,9 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun ble_selected(scanResult: ScanResult, recyclerView: RecyclerView){
-        textView.text="Connecting..."
         bluetoothGatt=scanResult.device.connectGatt(this,false,gattCallback)
     }
+
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     fun writeCharacteristic(characteristic: BluetoothGattCharacteristic, payload: ByteArray) {
@@ -245,9 +252,14 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     fun readCharacteristic(characteristic: BluetoothGattCharacteristic){
         bluetoothGatt?.readCharacteristic(characteristic)
+        Handler(Looper.getMainLooper()).postDelayed(
+            {   ssid_char_list= characteristic?.value!!.toString(Charsets.UTF_8)
+                addWifi(ssid_char_list)
+                val arrayAdapter:ArrayAdapter<String>
+                lvWifi.visibility=View.VISIBLE
+                arrayAdapter=ArrayAdapter(this,android.R.layout.simple_expandable_list_item_1,wifiResults)
+                lvWifi.adapter=arrayAdapter
+            }, 1000)
+
     }
-
-
-
-
 }

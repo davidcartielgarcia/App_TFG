@@ -15,4 +15,11 @@
     <string name="disconnected">Disconnected</string>
     <string name="error">Error</string>
     <string name="ble_search">Searching BLE devices</string>
+    <string name="ble_bt">Connect to device</string>
+    <string name="time">Set time</string>
+    <string name="user_bt">Add user to device</string>
+    <string name="surname">Surname</string>
+    <string name="id">ID</string>
+    <string name="wifi_init">Select WiFi SSID to connect</string>
+    <string name="sendUser">Add new User</string>
 </resources>

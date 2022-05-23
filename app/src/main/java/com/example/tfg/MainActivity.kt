@@ -6,7 +6,6 @@ import android.bluetooth.*
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.nfc.Tag
 import android.os.*
@@ -24,6 +23,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.properties.Delegates
+import android.content.Intent
 
 
 class MainActivity : AppCompatActivity() {
@@ -213,19 +213,9 @@ class MainActivity : AppCompatActivity() {
             wifiChar = gatt?.getService(service_uuid)?.getCharacteristic(wifi_uuid)
             readCharacteristic(wifiChar!!)
             initwifiLayout()
+            val intent = Intent(this@MainActivity,UserConfig::class.java)
+            startActivity(intent)
         }
-        /*
-        override fun onCharacteristicRead(
-            gatt: BluetoothGatt?,
-            characteristic: BluetoothGattCharacteristic?,
-            status: Int
-        ) {
-            super.onCharacteristicRead(gatt, characteristic, status)
-            //ssid_char_list= characteristic?.value!!.toString(Charsets.UTF_8)
-            //addWifi(ssid_char_list)
-        }
-
-         */
     }
 
     private fun addWifi(ssidCharList: String) {

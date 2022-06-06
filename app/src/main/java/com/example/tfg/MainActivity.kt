@@ -104,6 +104,7 @@ class MainActivity : AppCompatActivity() {
                 { writeCharacteristic(passChar!!,pass_text.text.toString().toByteArray())
                 },
                 100)
+
         }
         lvWifi.setOnItemClickListener { parent, view, position, id ->
             ssid_connect=wifiResults[position]
@@ -213,8 +214,6 @@ class MainActivity : AppCompatActivity() {
             wifiChar = gatt?.getService(service_uuid)?.getCharacteristic(wifi_uuid)
             readCharacteristic(wifiChar!!)
             initwifiLayout()
-            val intent = Intent(this@MainActivity,UserConfig::class.java)
-            startActivity(intent)
         }
     }
 

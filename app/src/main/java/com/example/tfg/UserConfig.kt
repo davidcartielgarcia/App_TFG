@@ -28,7 +28,7 @@ class UserConfig : AppCompatActivity() {
             val id=et_id.text.toString()
             val queue = Volley.newRequestQueue(this)
             if (surname!="" && id!="") {
-                val url = "http://192.168.1.42:80/configUser2device?surname=$surname&id=$id"
+                val url = "http://192.168.1.200:80/configUser2device?surname=$surname&id=$id"
                 val stringRequest = StringRequest(Request.Method.GET,url,Response.Listener { response ->
                     val intent = Intent(this,Menu::class.java)
                     startActivity(intent)

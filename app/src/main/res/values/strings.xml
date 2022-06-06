@@ -22,4 +22,10 @@
     <string name="id">ID</string>
     <string name="wifi_init">Select WiFi SSID to connect</string>
     <string name="sendUser">Add new User</string>
+    <string name="title_activity_set_time">Set Time</string>
+    <string name="bt_time">Set time to device</string>
+    <string name="tx_time">Configure the time to start the activity</string>
+    <string name="bt_ip">Set IP from server</string>
+    <string name="tx_ip">Server IP Adress</string>
+    <string name="bt_sendip">Send IP Adress</string>
 </resources>

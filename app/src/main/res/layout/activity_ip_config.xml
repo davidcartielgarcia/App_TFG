@@ -4,43 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".menu">
-
-
+    tools:context=".ipConfig">
 
     <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/ble_bt"
+        <TextView
+            android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ble_bt" />
+            android:text="@string/tx_ip" />
 
-        <Button
-            android:id="@+id/add_user_bt"
+        <EditText
+            android:id="@+id/et_ip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/user_bt" />
-
-        <Button
-            android:id="@+id/time_bt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/time" />
-
-        <Button
-            android:id="@+id/bt_serveIP"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/teal_200"
-            android:text="@string/bt_ip" />
+            android:ems="10"
+            android:hint="IP"
+            android:inputType="textPersonName" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/bt_ip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bt_sendip"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 </android.support.constraint.ConstraintLayout>
